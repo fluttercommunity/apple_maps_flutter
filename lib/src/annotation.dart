@@ -129,7 +129,7 @@ class AnnotationId {
 /// A annotation icon is drawn oriented against the device's screen rather than
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
-@immutable
+
 class Annotation {
   /// Creates a set of annotation configuration options.
   ///

@@ -37,7 +37,6 @@ public class AppleMapController: NSObject, FlutterPlatformView {
         
         self.mapView.delegate = self
         
-        self.mapView.setCenterCoordinate(initialCameraPosition, animated: false)
         self.setMethodCallHandlers()
         
         if let annotationsToAdd: NSArray = args["annotationsToAdd"] as? NSArray {
@@ -51,6 +50,10 @@ public class AppleMapController: NSObject, FlutterPlatformView {
         }
         if let circlesToAdd: NSArray = args["circlesToAdd"] as? NSArray {
             self.addCircles(circleData: circlesToAdd)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.mapView.setCenterCoordinate(self.initialCameraPosition, animated: false)
         }
     }
     
@@ -105,6 +108,154 @@ public class AppleMapController: NSObject, FlutterPlatformView {
                     self.takeSnapshot(options: SnapshotOptions.init(options: args), onCompletion: { (snapshot: FlutterStandardTypedData?, error: Error?) -> Void in
                         result(snapshot ?? error)
                     })
+                    break
+                case "map#lookAround":
+                    var selectedCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: args["latitude"] as! CLLocationDegrees, longitude: args["longitude"] as! CLLocationDegrees)
+                    if #available(iOS 16.0, *) {
+                        var categoryNames: Array<String> = args["poi_filter"] as? Array<String> ?? []
+                                            
+                                            var categories: [MKPointOfInterestCategory] = categoryNames.map { name in
+                                                var category: MKPointOfInterestCategory;
+                                                switch(name) {
+                                                case "airport":
+                                                    category = .airport
+                                                    break
+                                                case "amusementPark":
+                                                    category = .amusementPark
+                                                    break
+                                                case "aquarium":
+                                                    category = .aquarium
+                                                    break
+                                                case "atm":
+                                                    category = .atm
+                                                    break
+                                                case "bakery":
+                                                    category = .bakery
+                                                    break
+                                                case "bank":
+                                                    category = .bank
+                                                    break
+                                                case "beach":
+                                                    category = .beach
+                                                    break
+                                                case "brewery":
+                                                    category = .brewery
+                                                    break
+                                                case "cafe":
+                                                    category = .cafe
+                                                    break
+                                                case "campground":
+                                                    category = .campground
+                                                    break
+                                                case "carRental":
+                                                    category = .carRental
+                                                    break
+                                                case "evCharger":
+                                                    category = .evCharger
+                                                    break
+                                                case "fireStation":
+                                                    category = .fireStation
+                                                    break
+                                                case "fitnessCenter":
+                                                    category = .fitnessCenter
+                                                    break
+                                                case "foodMarket":
+                                                    category = .foodMarket
+                                                    break
+                                                case "gasStation":
+                                                    category = .gasStation
+                                                    break
+                                                case "hospital":
+                                                    category = .hospital
+                                                    break
+                                                case "hotel":
+                                                    category = .hotel
+                                                    break
+                                                case "laundry":
+                                                    category = .laundry
+                                                    break
+                                                case "library":
+                                                    category = .library
+                                                    break
+                                                case "marina":
+                                                    category = .marina
+                                                    break
+                                                case "movieTheater":
+                                                    category = .movieTheater
+                                                    break
+                                                case "museum":
+                                                    category = .museum
+                                                    break
+                                                case "nationalPark":
+                                                    category = .nationalPark
+                                                    break
+                                                case "nightlife":
+                                                    category = .nightlife
+                                                    break
+                                                case "park":
+                                                    category = .park
+                                                    break
+                                                case "parking":
+                                                    category = .parking
+                                                    break
+                                                case "pharmacy":
+                                                    category = .pharmacy
+                                                    break
+                                                case "police":
+                                                    category = .police
+                                                    break
+                                                case "postOffice":
+                                                    category = .postOffice
+                                                    break
+                                                case "publicTransport":
+                                                    category = .publicTransport
+                                                    break
+                                                case "restaurant":
+                                                    category = .restaurant
+                                                    break
+                                                case "restroom":
+                                                    category = .restroom
+                                                    break
+                                                case "school":
+                                                    category = .school
+                                                    break
+                                                case "stadium":
+                                                    category = .stadium
+                                                    break
+                                                case "store":
+                                                    category = .store
+                                                    break
+                                                case "theater":
+                                                    category = .theater
+                                                    break
+                                                case "university":
+                                                    category = .university
+                                                    break
+                                                case "winery":
+                                                    category = .winery
+                                                    break
+                                                case "zoo":
+                                                    category = .zoo
+                                                    break
+                                                default:
+                                                    category = MKPointOfInterestCategory(rawValue: name)
+                                                }
+                                                return category
+                                            }
+                                            
+                                            lookAround(selectedCoordinate: selectedCoordinate, categories: categories)
+                    }
+                    break
+                case "map#isLookAroundAvailable":
+                    var selectedCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: args["latitude"] as! CLLocationDegrees, longitude: args["longitude"] as! CLLocationDegrees)
+                    if #available(iOS 16.0, *) {
+                        self.isLookAroundAvailable(selectedCoordinate: selectedCoordinate) { available in
+                            result(available)
+                        }
+                    } else {
+                        result(false)
+                    }
+                    break
                 default:
                     result(FlutterMethodNotImplemented)
                     break
@@ -148,6 +299,69 @@ public class AppleMapController: NSObject, FlutterPlatformView {
                 }
             }
         })
+    }
+    
+    @available(iOS 16.0, *)
+    func lookAround(selectedCoordinate: CLLocationCoordinate2D, categories: [MKPointOfInterestCategory]) {
+        // Create a look around scene request
+        let sceneRequest = MKLookAroundSceneRequest(coordinate: selectedCoordinate)
+        
+        // Fetch the look around scene
+        sceneRequest.getSceneWithCompletionHandler { [weak self] (scene: MKLookAroundScene?, error: Error?) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Error fetching look around scene: \(error)")
+                return
+            }
+            
+            guard let scene = scene else {
+                print("No look around scene available at this location")
+                return
+            }
+            
+            // Store the fetched scene
+            let lookAroundScene = scene
+            
+            // Create and present a look around view controller
+            let lookAroundVC = MKLookAroundViewController(scene: scene)
+            if(categories.isEmpty == false) {
+                lookAroundVC.pointOfInterestFilter = MKPointOfInterestFilter(including: categories)
+            }
+            
+            // Make sure to present the look around view controller on the main thread
+            DispatchQueue.main.async {
+                if let topVC = self.getTopViewController() {
+                    topVC.present(lookAroundVC, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+        
+    @available(iOS 16.0, *)
+    func isLookAroundAvailable(selectedCoordinate: CLLocationCoordinate2D, completion: @escaping (Bool) -> Void) {
+       let sceneRequest = MKLookAroundSceneRequest(coordinate: selectedCoordinate)
+       sceneRequest.getSceneWithCompletionHandler { (scene: MKLookAroundScene?, error: Error?) in
+                    if let _ = scene {
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+        }
+    }
+
+
+    private func getTopViewController() -> UIViewController? {
+            var topViewController: UIViewController? = nil
+            if #available(iOS 13.0, *) {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                    topViewController = windowScene.windows.first { $0.isKeyWindow }?.rootViewController
+                    while let presentedVC = topViewController?.presentedViewController {
+                        topViewController = presentedVC
+                    }
+                }
+            }
+            return topViewController
     }
     
     private func annotationUpdate(args: Dictionary<String, Any>) -> Void {

@@ -41,8 +41,9 @@ void main() {
       FakePlatformViewsController();
 
   setUpAll(() {
-    SystemChannels.platform_views.setMockMethodCallHandler(
-        fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform_views,
+            fakePlatformViewsController.fakePlatformViewsMethodHandler);
   });
 
   setUp(() {

@@ -27,6 +27,11 @@ enum TrackingMode {
   followWithHeading,
 }
 
+enum ElevationStyle {
+  flat,
+  realistic,
+}
+
 /// Bounds for the map camera target.
 // Used with [AppleMapOptions] to wrap a [LatLngBounds] value. This allows
 // distinguishing between specifying an unbounded target (null `LatLngBounds`)
@@ -45,10 +50,10 @@ class CameraTargetBounds {
   static const CameraTargetBounds unbounded = CameraTargetBounds(null);
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
-    final CameraTargetBounds typedOther = other;
+    final CameraTargetBounds typedOther = other as CameraTargetBounds;
     return bounds == typedOther.bounds;
   }
 
@@ -78,10 +83,10 @@ class MinMaxZoomPreference {
   dynamic _toJson() => <dynamic>[minZoom, maxZoom];
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
-    final MinMaxZoomPreference typedOther = other;
+    final MinMaxZoomPreference typedOther = other as MinMaxZoomPreference;
     return minZoom == typedOther.minZoom && maxZoom == typedOther.maxZoom;
   }
 

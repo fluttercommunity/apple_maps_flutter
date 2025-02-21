@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1
+
+* Added elevation style support for maps
+* Added the LookAround feature support
+* Remove unused imports and improved type safety in equality operators
+
 ## 1.4.0
 
 * Flutter 3.27.1 compatibility, replace `ui.hash*` with `Object.hash*

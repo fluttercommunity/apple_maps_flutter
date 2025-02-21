@@ -4,6 +4,49 @@
 
 part of apple_maps_flutter;
 
+enum PointOfInterestCategory {
+  airport,
+  amusementPark,
+  aquarium,
+  atm,
+  bakery,
+  bank,
+  beach,
+  brewery,
+  cafe,
+  campground,
+  carRental,
+  evCharger,
+  fireStation,
+  fitnessCenter,
+  foodMarket,
+  gasStation,
+  hospital,
+  hotel,
+  laundry,
+  library,
+  marina,
+  movieTheater,
+  museum,
+  nationalPark,
+  nightlife,
+  park,
+  parking,
+  pharmacy,
+  police,
+  postOffice,
+  publicTransport,
+  restaurant,
+  restroom,
+  school,
+  stadium,
+  store,
+  theater,
+  university,
+  winery,
+  zoo
+}
+
 /// Controller for a single AppleMap instance running on the host platform.
 class AppleMapController {
   AppleMapController._(
@@ -243,5 +286,20 @@ class AppleMapController {
       [SnapshotOptions snapshotOptions = const SnapshotOptions()]) {
     return channel.invokeMethod<Uint8List>(
         'map#takeSnapshot', snapshotOptions._toMap());
+  }
+
+  Future<void> lookAround(LatLng latLng, List<PointOfInterestCategory> poiFilter) async {
+    await channel.invokeMethod<void>('map#lookAround', <String, dynamic>{
+      'latitude': latLng.latitude,
+      'longitude': latLng.longitude,
+      'poi_filter': poiFilter.map((e) => e.name,).toList()
+    });
+  }
+
+  Future<bool?> isLookAroundAvailable(LatLng latLng) async {
+    return channel.invokeMethod<bool>('map#isLookAroundAvailable', <String, dynamic>{
+      'latitude': latLng.latitude,
+      'longitude': latLng.longitude
+    });
   }
 }
