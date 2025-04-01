@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0
+
+* Add option to set a `colorScheme` for the map (system, light, dark)
+
 ## 1.4.0
 
 * Flutter 3.27.1 compatibility, replace `ui.hash*` with `Object.hash*
