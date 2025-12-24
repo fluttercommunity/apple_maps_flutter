@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import Flutter
 
 class FlutterAnnotation: NSObject, MKAnnotation {
     @objc dynamic var coordinate: CLLocationCoordinate2D

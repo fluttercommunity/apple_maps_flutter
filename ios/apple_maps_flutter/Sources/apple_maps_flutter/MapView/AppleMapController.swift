@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import Flutter
 
 public class AppleMapController: NSObject, FlutterPlatformView {
     var contentView: UIView

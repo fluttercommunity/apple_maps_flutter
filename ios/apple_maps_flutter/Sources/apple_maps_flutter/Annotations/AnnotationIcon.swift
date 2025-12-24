@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import Flutter
+import UIKit
 
 enum IconType {
     case PIN, MARKER, CUSTOM_FROM_ASSET, CUSTOM_FROM_BYTES

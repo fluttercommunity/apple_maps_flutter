@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Flutter
 
 public class AppleMapViewFactory: NSObject, FlutterPlatformViewFactory {
     

@@ -7,6 +7,7 @@
 
 import Foundation
 import MapKit
+import Flutter
 
 class TouchHandler {
     

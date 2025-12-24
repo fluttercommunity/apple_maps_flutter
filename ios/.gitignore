@@ -7,6 +7,8 @@
 *.swp
 profile
 
+.build/
+.swiftpm/
 DerivedData/
 build/
 GeneratedPluginRegistrant.h
