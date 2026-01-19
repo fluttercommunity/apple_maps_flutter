@@ -215,9 +215,6 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             fallthrough
         case .authorizedWhenInUse:
             locationManager.requestWhenInUseAuthorization()
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.distanceFilter = kCLDistanceFilterNone
-            locationManager.startUpdatingLocation()
             self.showsUserLocation = true
             break
             
