@@ -16,6 +16,19 @@ enum MapType {
   hybrid,
 }
 
+/// Controls whether MapKit renders the map on flat terrain or with realistic
+/// 3D elevation where the device and map data support it.
+enum MapElevationStyle {
+  /// Flat, 2D terrain.
+  flat,
+
+  /// Realistic, 3D terrain.
+  ///
+  /// This maps to MapKit's iOS 16+ realistic elevation configuration on iOS.
+  /// Unsupported devices or areas may fall back to flat terrain.
+  realistic,
+}
+
 enum TrackingMode {
   // the user's location is not followed
   none,
@@ -63,7 +76,7 @@ class CameraTargetBounds {
 
 class MinMaxZoomPreference {
   const MinMaxZoomPreference(this.minZoom, this.maxZoom)
-      : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
+    : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
   /// The preferred minimum zoom level or null, if unbounded from below.
   final double? minZoom;
@@ -72,8 +85,10 @@ class MinMaxZoomPreference {
   final double? maxZoom;
 
   /// Unbounded zooming.
-  static const MinMaxZoomPreference unbounded =
-      MinMaxZoomPreference(null, null);
+  static const MinMaxZoomPreference unbounded = MinMaxZoomPreference(
+    null,
+    null,
+  );
 
   dynamic _toJson() => <dynamic>[minZoom, maxZoom];
 

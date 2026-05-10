@@ -16,7 +16,7 @@ public extension MKMapView {
         static var _pitch: CGFloat = CGFloat(0)
         static var _heading: CLLocationDirection = CLLocationDirection(0)
         static var _maxZoomLevel: Double = Double(21)
-        static var _minZoomLevel: Double = Double(2)
+        static var _minZoomLevel: Double = Double(0)
     }
     
     var maxZoomLevel: Double {
@@ -239,12 +239,8 @@ public extension MKMapView {
     }
     
     func zoomOut(animated: Bool) {
-        if Holder._zoomLevel - 1 >= Holder._minZoomLevel {
-            Holder._zoomLevel -= 1
-            if round(Holder._zoomLevel) <= 2 {
-               Holder._zoomLevel = 0
-            }
-
+        if Holder._zoomLevel > Holder._minZoomLevel {
+            Holder._zoomLevel = Swift.max(Holder._minZoomLevel, Holder._zoomLevel - 1)
             if #available(iOS 9.0, *) {
                self.setCenterCoordinateWithAltitude(centerCoordinate: centerCoordinate, zoomLevel: Holder._zoomLevel, animated: animated)
             } else {
