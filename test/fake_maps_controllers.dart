@@ -11,8 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 class FakePlatformAppleMap {
   FakePlatformAppleMap(int id, Map<dynamic, dynamic> params) {
     cameraPosition = CameraPosition.fromMap(params['initialCameraPosition']);
-    channel = MethodChannel('apple_maps_plugin.luisthein.de/apple_maps_$id',
-        const StandardMethodCodec());
+    channel = MethodChannel(
+      'apple_maps_plugin.luisthein.de/apple_maps_$id',
+      const StandardMethodCodec(),
+    );
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updatePolylines(params);
@@ -28,6 +30,8 @@ class FakePlatformAppleMap {
   bool? compassEnabled;
 
   MapType? mapType;
+
+  MapElevationStyle? mapElevationStyle;
 
   MinMaxZoomPreference? minMaxZoomPreference;
 
@@ -93,12 +97,15 @@ class FakePlatformAppleMap {
     if (annotationUpdates == null) {
       return;
     }
-    annotationsToAdd =
-        _deserializeAnnotations(annotationUpdates['annotationsToAdd']);
-    annotationIdsToRemove =
-        _deserializeAnnotationIds(annotationUpdates['annotationIdsToRemove']);
-    annotationsToChange =
-        _deserializeAnnotations(annotationUpdates['annotationsToChange']);
+    annotationsToAdd = _deserializeAnnotations(
+      annotationUpdates['annotationsToAdd'],
+    );
+    annotationIdsToRemove = _deserializeAnnotationIds(
+      annotationUpdates['annotationIdsToRemove'],
+    );
+    annotationsToChange = _deserializeAnnotations(
+      annotationUpdates['annotationsToChange'],
+    );
   }
 
   Set<AnnotationId> _deserializeAnnotationIds(List<dynamic>? annotationIds) {
@@ -134,11 +141,12 @@ class FakePlatformAppleMap {
 
       result.add(
         Annotation(
-            annotationId: AnnotationId(annotationId),
-            draggable: draggable,
-            visible: visible,
-            infoWindow: infoWindow,
-            alpha: alpha),
+          annotationId: AnnotationId(annotationId),
+          draggable: draggable,
+          visible: visible,
+          infoWindow: infoWindow,
+          alpha: alpha,
+        ),
       );
     }
 
@@ -150,10 +158,12 @@ class FakePlatformAppleMap {
       return;
     }
     polylinesToAdd = _deserializePolylines(polylineUpdates['polylinesToAdd']);
-    polylineIdsToRemove =
-        _deserializePolylineIds(polylineUpdates['polylineIdsToRemove']);
-    polylinesToChange =
-        _deserializePolylines(polylineUpdates['polylinesToChange']);
+    polylineIdsToRemove = _deserializePolylineIds(
+      polylineUpdates['polylineIdsToRemove'],
+    );
+    polylinesToChange = _deserializePolylines(
+      polylineUpdates['polylinesToChange'],
+    );
   }
 
   Set<PolylineId> _deserializePolylineIds(List<dynamic>? polylineIds) {
@@ -176,11 +186,13 @@ class FakePlatformAppleMap {
       final bool visible = polylineData['visible'];
       // final bool geodesic = polylineData['geodesic'];
 
-      result.add(Polyline(
-        polylineId: PolylineId(polylineId),
-        visible: visible,
-        // geodesic: geodesic,
-      ));
+      result.add(
+        Polyline(
+          polylineId: PolylineId(polylineId),
+          visible: visible,
+          // geodesic: geodesic,
+        ),
+      );
     }
 
     return result;
@@ -191,8 +203,9 @@ class FakePlatformAppleMap {
       return;
     }
     polygonsToAdd = _deserializePolygons(polygonUpdates['polygonsToAdd']);
-    polygonIdsToRemove =
-        _deserializePolygonIds(polygonUpdates['polygonIdsToRemove']);
+    polygonIdsToRemove = _deserializePolygonIds(
+      polygonUpdates['polygonIdsToRemove'],
+    );
     polygonsToChange = _deserializePolygons(polygonUpdates['polygonsToChange']);
   }
 
@@ -239,8 +252,9 @@ class FakePlatformAppleMap {
       return;
     }
     circlesToAdd = _deserializeCircles(circleUpdates['circlesToAdd']);
-    circleIdsToRemove =
-        _deserializeCircleIds(circleUpdates['circleIdsToRemove']);
+    circleIdsToRemove = _deserializeCircleIds(
+      circleUpdates['circleIdsToRemove'],
+    );
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
@@ -262,11 +276,9 @@ class FakePlatformAppleMap {
       final bool visible = circleData['visible'];
       final double radius = circleData['radius'];
 
-      result.add(Circle(
-        circleId: CircleId(circleId),
-        visible: visible,
-        radius: radius,
-      ));
+      result.add(
+        Circle(circleId: CircleId(circleId), visible: visible, radius: radius),
+      );
     }
 
     return result;
@@ -279,10 +291,16 @@ class FakePlatformAppleMap {
     if (options.containsKey('mapType')) {
       mapType = MapType.values[options['mapType']];
     }
+    if (options.containsKey('mapElevationStyle')) {
+      mapElevationStyle =
+          MapElevationStyle.values[options['mapElevationStyle']];
+    }
     if (options.containsKey('minMaxZoomPreference')) {
       final List<dynamic> minMaxZoomList = options['minMaxZoomPreference'];
-      minMaxZoomPreference =
-          MinMaxZoomPreference(minMaxZoomList[0], minMaxZoomList[1]);
+      minMaxZoomPreference = MinMaxZoomPreference(
+        minMaxZoomList[0],
+        minMaxZoomList[1],
+      );
     }
     if (options.containsKey('rotateGesturesEnabled')) {
       rotateGesturesEnabled = options['rotateGesturesEnabled'];
@@ -313,10 +331,7 @@ class FakePlatformViewsController {
       case 'create':
         final Map<dynamic, dynamic> args = call.arguments;
         final Map<dynamic, dynamic> params = _decodeParams(args['params']);
-        lastCreatedView = FakePlatformAppleMap(
-          args['id'],
-          params,
-        );
+        lastCreatedView = FakePlatformAppleMap(args['id'], params);
         return Future<int>.sync(() => 1);
       default:
         return Future<void>.sync(() {});

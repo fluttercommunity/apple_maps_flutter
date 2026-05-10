@@ -20,6 +20,9 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
     var oldBounds: CGRect?
     var options: Dictionary<String, Any>?
     var isMyLocationButtonShowing: Bool? = false
+    var currentMapType: Int = 0
+    var currentMapElevationStyle: Int = 0
+    var currentTrafficEnabled: Bool = false
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
@@ -141,16 +144,24 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             self.layoutMargins = margins
         }
         
+        var shouldUpdateMapConfiguration = false
         if let mapType: Int = options["mapType"] as? Int {
-            self.mapType = self.mapTypes[mapType]
+            self.currentMapType = mapType
+            shouldUpdateMapConfiguration = true
+        }
+        
+        if let mapElevationStyle: Int = options["mapElevationStyle"] as? Int {
+            self.currentMapElevationStyle = mapElevationStyle
+            shouldUpdateMapConfiguration = true
         }
         
         if let trafficEnabled: Bool = options["trafficEnabled"] as? Bool {
-            if #available(iOS 9.0, *) {
-                self.showsTraffic = trafficEnabled
-            } else {
-                // do nothing
-            }
+            self.currentTrafficEnabled = trafficEnabled
+            shouldUpdateMapConfiguration = true
+        }
+        
+        if shouldUpdateMapConfiguration {
+            self.applyMapConfiguration()
         }
         
         if let rotateGesturesEnabled: Bool = options["rotateGesturesEnabled"] as? Bool {
@@ -201,6 +212,36 @@ class FlutterMapView: MKMapView, UIGestureRecognizerDelegate {
             }
         }
 
+    }
+    
+    private func applyMapConfiguration() {
+        guard self.currentMapType >= 0 && self.currentMapType < self.mapTypes.count else {
+            return
+        }
+        
+        if #available(iOS 16.0, *) {
+            let elevationStyle: MKMapConfiguration.ElevationStyle = self.currentMapElevationStyle == 1 ? .realistic : .flat
+            
+            switch self.currentMapType {
+            case 0:
+                let configuration = MKStandardMapConfiguration(elevationStyle: elevationStyle)
+                configuration.showsTraffic = self.currentTrafficEnabled
+                self.preferredConfiguration = configuration
+            case 1:
+                self.preferredConfiguration = MKImageryMapConfiguration(elevationStyle: elevationStyle)
+            case 2:
+                let configuration = MKHybridMapConfiguration(elevationStyle: elevationStyle)
+                configuration.showsTraffic = self.currentTrafficEnabled
+                self.preferredConfiguration = configuration
+            default:
+                self.mapType = self.mapTypes[self.currentMapType]
+            }
+        } else {
+            self.mapType = self.mapTypes[self.currentMapType]
+            if #available(iOS 9.0, *) {
+                self.showsTraffic = self.currentTrafficEnabled
+            }
+        }
     }
     
     func setUserLocation() {

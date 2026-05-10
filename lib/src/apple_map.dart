@@ -23,6 +23,7 @@ class AppleMap extends StatefulWidget {
     this.compassEnabled = true,
     this.trafficEnabled = false,
     this.mapType = MapType.standard,
+    this.mapElevationStyle = MapElevationStyle.flat,
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.trackingMode = TrackingMode.none,
     this.rotateGesturesEnabled = true,
@@ -58,6 +59,9 @@ class AppleMap extends StatefulWidget {
 
   /// Type of map tiles to be rendered.
   final MapType mapType;
+
+  /// The elevation style used by the native Apple map.
+  final MapElevationStyle mapElevationStyle;
 
   /// The mode used to track the user location.
   final TrackingMode trackingMode;
@@ -204,7 +208,8 @@ class _AppleMapState extends State<AppleMap> {
       );
     }
     return Text(
-        '$defaultTargetPlatform is not yet supported by the apple maps plugin');
+      '$defaultTargetPlatform is not yet supported by the apple maps plugin',
+    );
   }
 
   @override
@@ -229,8 +234,9 @@ class _AppleMapState extends State<AppleMap> {
 
   void _updateOptions() async {
     final _AppleMapOptions newOptions = _AppleMapOptions.fromWidget(widget);
-    final Map<String, dynamic> updates =
-        _appleMapOptions.updatesMap(newOptions);
+    final Map<String, dynamic> updates = _appleMapOptions.updatesMap(
+      newOptions,
+    );
     if (updates.isEmpty) {
       return;
     }
@@ -241,15 +247,17 @@ class _AppleMapState extends State<AppleMap> {
 
   void _updateAnnotations() async {
     final AppleMapController controller = await _controller.future;
-    controller._updateAnnotations(_AnnotationUpdates.from(
-        _annotations.values.toSet(), widget.annotations));
+    controller._updateAnnotations(
+      _AnnotationUpdates.from(_annotations.values.toSet(), widget.annotations),
+    );
     _annotations = _keyByAnnotationId(widget.annotations);
   }
 
   void _updatePolylines() async {
     final AppleMapController controller = await _controller.future;
     controller._updatePolylines(
-        _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
+      _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines),
+    );
     _polylines = _keyByPolylineId(widget.polylines);
   }
 
@@ -257,7 +265,8 @@ class _AppleMapState extends State<AppleMap> {
     final AppleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updatePolygons(
-        _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
+      _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons),
+    );
     _polygons = _keyByPolygonId(widget.polygons);
   }
 
@@ -265,7 +274,8 @@ class _AppleMapState extends State<AppleMap> {
     final AppleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updateCircles(
-        _CircleUpdates.from(_circles.values.toSet(), widget.circles));
+      _CircleUpdates.from(_circles.values.toSet(), widget.circles),
+    );
     _circles = _keyByCircleId(widget.circles);
   }
 
@@ -332,6 +342,7 @@ class _AppleMapOptions {
     this.compassEnabled,
     this.trafficEnabled,
     this.mapType,
+    this.mapElevationStyle,
     this.minMaxZoomPreference,
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
@@ -349,6 +360,7 @@ class _AppleMapOptions {
       compassEnabled: map.compassEnabled,
       trafficEnabled: map.trafficEnabled,
       mapType: map.mapType,
+      mapElevationStyle: map.mapElevationStyle,
       minMaxZoomPreference: map.minMaxZoomPreference,
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
@@ -367,6 +379,8 @@ class _AppleMapOptions {
   final bool? trafficEnabled;
 
   final MapType? mapType;
+
+  final MapElevationStyle? mapElevationStyle;
 
   final MinMaxZoomPreference? minMaxZoomPreference;
 
@@ -400,6 +414,7 @@ class _AppleMapOptions {
     addIfNonNull('compassEnabled', compassEnabled);
     addIfNonNull('trafficEnabled', trafficEnabled);
     addIfNonNull('mapType', mapType?.index);
+    addIfNonNull('mapElevationStyle', mapElevationStyle?.index);
     addIfNonNull('minMaxZoomPreference', minMaxZoomPreference?._toJson());
     addIfNonNull('rotateGesturesEnabled', rotateGesturesEnabled);
     addIfNonNull('scrollGesturesEnabled', scrollGesturesEnabled);
@@ -410,16 +425,18 @@ class _AppleMapOptions {
     addIfNonNull('myLocationButtonEnabled', myLocationButtonEnabled);
     addIfNonNull('padding', _serializePadding(padding));
     addIfNonNull(
-        'insetsLayoutMarginsFromSafeArea', insetsLayoutMarginsFromSafeArea);
+      'insetsLayoutMarginsFromSafeArea',
+      insetsLayoutMarginsFromSafeArea,
+    );
     return optionsMap;
   }
 
   Map<String, dynamic> updatesMap(_AppleMapOptions newOptions) {
     final Map<String, dynamic> prevOptionsMap = toMap();
 
-    return newOptions.toMap()
-      ..removeWhere(
-          (String key, dynamic value) => prevOptionsMap[key] == value);
+    return newOptions.toMap()..removeWhere(
+      (String key, dynamic value) => prevOptionsMap[key] == value,
+    );
   }
 
   List<double>? _serializePadding(EdgeInsets? insets) {
