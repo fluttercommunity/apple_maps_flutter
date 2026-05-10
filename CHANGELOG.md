@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0
+
+* Added `MapElevationStyle` to support realistic 3D elevation on iOS 16+.
+* Allow zoom level 0 so maps can zoom farther out toward globe-style views.
+
 ## 1.4.0
 
 * Flutter 3.27.1 compatibility, replace `ui.hash*` with `Object.hash*
