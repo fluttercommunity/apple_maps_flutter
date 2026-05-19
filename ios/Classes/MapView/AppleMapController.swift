@@ -18,6 +18,13 @@ public class AppleMapController: NSObject, FlutterPlatformView {
     var currentlySelectedAnnotation: String?
     var snapShotOptions: MKMapSnapshotter.Options = MKMapSnapshotter.Options()
     var snapShot: MKMapSnapshotter?
+    /// Index of every FlutterAnnotation currently on the map, keyed by id, so
+    /// add/remove/update/lookup can be O(1) instead of O(N) scans through
+    /// mapView.annotations. Kept in sync with the map by every mutator below.
+    var annotationsById: [String: FlutterAnnotation] = [:]
+    /// Highest zIndex ever assigned, so getNextAnnotationZIndex is O(1).
+    /// Monotonically increasing; never decreases on remove.
+    var maxAnnotationZIndex: Double = -1
     
     public init(withFrame frame: CGRect, withRegistrar registrar: FlutterPluginRegistrar, withargs args: Dictionary<String, Any> ,withId id: Int64) {
         self.options = args["options"] as! [String: Any]

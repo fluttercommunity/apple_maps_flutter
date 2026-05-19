@@ -40,9 +40,15 @@ class _AnnotationUpdates {
         .map(idToCurrentAnnotation)
         .toSet();
 
+    // Only include annotations whose content actually changed. The previous
+    // implementation shipped every annotation whose id was in both sets, which
+    // for large annotation sets meant serializing thousands of unchanged
+    // annotations across the platform channel on every diff.
     final Set<Annotation> _annotationsToChange = currentAnnotationIds
         .intersection(prevAnnotationIds)
         .map(idToCurrentAnnotation)
+        .where((Annotation current) =>
+            current != previousAnnotations[current.annotationId])
         .toSet();
 
     annotationsToAdd = _annotationsToAdd;

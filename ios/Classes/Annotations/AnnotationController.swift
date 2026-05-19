@@ -11,6 +11,12 @@ import MapKit
 extension AppleMapController: AnnotationDelegate {
 
     public func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView)  {
+        if #available(iOS 11.0, *),
+           let cluster = view.annotation as? MKClusterAnnotation {
+            mapView.deselectAnnotation(cluster, animated: false)
+            self.zoomInto(cluster: cluster, on: mapView)
+            return
+        }
         if let annotation: FlutterAnnotation = view.annotation as? FlutterAnnotation  {
             self.currentlySelectedAnnotation = annotation.id
             if !annotation.selectedProgrammatically {
@@ -34,10 +40,47 @@ extension AppleMapController: AnnotationDelegate {
     public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             return nil
+        } else if #available(iOS 11.0, *), let cluster = annotation as? MKClusterAnnotation {
+            return self.getClusterAnnotationView(for: cluster)
         } else if let flutterAnnotation = annotation as? FlutterAnnotation {
             return self.getAnnotationView(annotation: flutterAnnotation)
         }
         return nil
+    }
+
+    @available(iOS 11.0, *)
+    private func getClusterAnnotationView(for cluster: MKClusterAnnotation) -> MKAnnotationView {
+        let identifier = "FlutterClusterAnnotationView"
+        self.mapView.register(FlutterClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: identifier)
+        let view = self.mapView.dequeueReusableAnnotationView(withIdentifier: identifier, for: cluster)
+        view.annotation = cluster
+        return view
+    }
+
+    @available(iOS 11.0, *)
+    private func zoomInto(cluster: MKClusterAnnotation, on mapView: MKMapView) {
+        let members = cluster.memberAnnotations
+        guard !members.isEmpty else { return }
+        var minLat = members[0].coordinate.latitude
+        var maxLat = minLat
+        var minLon = members[0].coordinate.longitude
+        var maxLon = minLon
+        for member in members {
+            let c = member.coordinate
+            if c.latitude < minLat { minLat = c.latitude }
+            if c.latitude > maxLat { maxLat = c.latitude }
+            if c.longitude < minLon { minLon = c.longitude }
+            if c.longitude > maxLon { maxLon = c.longitude }
+        }
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        let span = MKCoordinateSpan(
+            latitudeDelta: max((maxLat - minLat) * 1.6, 0.01),
+            longitudeDelta: max((maxLon - minLon) * 1.6, 0.01)
+        )
+        mapView.setRegion(MKCoordinateRegion(center: center, span: span), animated: true)
     }
 
     func getAnnotationView(annotation: FlutterAnnotation) -> MKAnnotationView {
@@ -76,6 +119,10 @@ extension AppleMapController: AnnotationDelegate {
         annotationView!.alpha = CGFloat(annotation.alpha ?? 1.00)
         annotationView!.isDraggable = annotation.isDraggable ?? false
 
+        if #available(iOS 11.0, *) {
+            annotationView!.clusteringIdentifier = annotation.clusteringIdentifier
+        }
+
         return annotationView!
     }
 
@@ -87,32 +134,42 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     func annotationsToChange(annotations: NSArray) {
-        let oldAnnotations: [MKAnnotation] = self.mapView.annotations
         for annotation in annotations {
             let annotationData: Dictionary<String, Any> = annotation as! Dictionary<String, Any>
-            if let annotationToChange = oldAnnotations.filter({($0 as? FlutterAnnotation)?.id == annotationData["annotationId"] as? String})[0] as? FlutterAnnotation {
-                let newAnnotation = FlutterAnnotation.init(fromDictionary: annotationData, registrar: registrar)
-                if annotationToChange != newAnnotation {
-                    if !annotationToChange.wasDragged {
-                        updateAnnotation(annotation: newAnnotation)
-                    } else {
-                        annotationToChange.wasDragged = false
-                    }
+            guard let id = annotationData["annotationId"] as? String,
+                  let annotationToChange = self.annotationsById[id] else {
+                continue
+            }
+            let newAnnotation = FlutterAnnotation.init(fromDictionary: annotationData, registrar: registrar)
+            if annotationToChange != newAnnotation {
+                if !annotationToChange.wasDragged {
+                    updateAnnotation(annotation: newAnnotation)
+                } else {
+                    annotationToChange.wasDragged = false
                 }
             }
         }
     }
 
     func annotationsIdsToRemove(annotationIds: NSArray) {
+        var toRemove: [FlutterAnnotation] = []
+        toRemove.reserveCapacity(annotationIds.count)
         for annotationId in annotationIds {
-            if let _annotationId: String = annotationId as? String {
-                removeAnnotation(id: _annotationId)
+            guard let id = annotationId as? String,
+                  let annotation = self.annotationsById.removeValue(forKey: id) else {
+                continue
             }
+            toRemove.append(annotation)
+        }
+        if !toRemove.isEmpty {
+            self.mapView.removeAnnotations(toRemove)
         }
     }
 
     func removeAllAnnotations() {
         self.mapView.removeAnnotations(self.mapView.annotations)
+        self.annotationsById.removeAll()
+        self.maxAnnotationZIndex = -1
     }
 
     func onAnnotationClick(annotation: MKAnnotation) {
@@ -136,12 +193,13 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     func isAnnotationSelected(with id: String) -> Bool {
-        return self.mapView.selectedAnnotations.contains(where: { annotation in return self.getAnnotation(with: id) == (annotation as? FlutterAnnotation)})
+        guard let annotation = self.annotationsById[id] else { return false }
+        return self.mapView.selectedAnnotations.contains(where: { ($0 as? FlutterAnnotation) === annotation })
     }
 
 
     private func removeAnnotation(id: String) {
-        if let flutterAnnotation: FlutterAnnotation = self.getAnnotation(with: id) {
+        if let flutterAnnotation = self.annotationsById.removeValue(forKey: id) {
             self.mapView.removeAnnotation(flutterAnnotation)
         }
     }
@@ -177,11 +235,11 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     private func getAnnotation(with id: String) -> FlutterAnnotation? {
-        return self.mapView.annotations.filter { annotation in return (annotation as? FlutterAnnotation)?.id == id }.first as? FlutterAnnotation
+        return self.annotationsById[id]
     }
 
     private func annotationExists(with id: String) -> Bool {
-        return self.getAnnotation(with: id) != nil
+        return self.annotationsById[id] != nil
     }
 
     private func addAnnotation(annotationData: Dictionary<String, Any>) {
@@ -194,12 +252,18 @@ extension AppleMapController: AnnotationDelegate {
      - Parameter annotation: the FlutterAnnotation that should be added
      */
     private func addAnnotation(annotation: FlutterAnnotation) {
-        if self.annotationExists(with: annotation.id) {
-            self.removeAnnotation(id: annotation.id)
+        if let id = annotation.id, self.annotationsById[id] != nil {
+            self.removeAnnotation(id: id)
         }
         if annotation.zIndex == -1 {
             annotation.zIndex = self.getNextAnnotationZIndex()
             channel.invokeMethod("annotation#onZIndexChanged", arguments: ["annotationId": annotation.id!, "zIndex": annotation.zIndex])
+        }
+        if annotation.zIndex > self.maxAnnotationZIndex {
+            self.maxAnnotationZIndex = annotation.zIndex
+        }
+        if let id = annotation.id {
+            self.annotationsById[id] = annotation
         }
         self.mapView.addAnnotation(annotation)
     }
@@ -225,15 +289,14 @@ extension AppleMapController: AnnotationDelegate {
     }
 
     private func getNextAnnotationZIndex() -> Double {
-        let mapViewAnnotations = self.mapView.getMapViewAnnotations()
-        if mapViewAnnotations.isEmpty {
-            return 0;
+        if self.annotationsById.isEmpty {
+            return 0
         }
-        return (mapViewAnnotations.last??.zIndex ?? 0) + 1
+        return self.maxAnnotationZIndex + 1
     }
 
     private func isAnnotationInFront(zIndex: Double) -> Bool {
-        return (self.mapView.getMapViewAnnotations().last??.zIndex ?? 0) == zIndex
+        return self.maxAnnotationZIndex == zIndex
     }
 
     private func getPinAnnotationView(annotation: FlutterAnnotation, id: String) -> MKPinAnnotationView {
