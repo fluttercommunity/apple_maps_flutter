@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1
+
+* Fix iOS deprecation warnings: use `pointOfInterestFilter` for map snapshots on iOS 13+ instead of deprecated `showsPointsOfInterest`, and use the instance `authorizationStatus` on iOS 14+ instead of the deprecated class method.
+
 ## 1.4.0
 
 * Flutter 3.27.1 compatibility, replace `ui.hash*` with `Object.hash*
