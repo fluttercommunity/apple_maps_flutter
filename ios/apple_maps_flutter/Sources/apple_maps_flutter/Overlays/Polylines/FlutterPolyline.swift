@@ -1,3 +1,4 @@
+import Flutter
 //
 //  FlutterPolyline.swift
 //  apple_maps_flutter
