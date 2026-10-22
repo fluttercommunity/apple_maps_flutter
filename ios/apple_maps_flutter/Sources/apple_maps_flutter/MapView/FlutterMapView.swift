@@ -1,3 +1,4 @@
+import Flutter
 //
 //  FlutterAppleMap.swift
 //  apple_maps_flutter

@@ -235,12 +235,14 @@ class _AppleMapState extends State<AppleMap> {
       return;
     }
     final AppleMapController controller = await _controller.future;
+    if (!mounted) return;
     controller._updateMapOptions(updates);
     _appleMapOptions = newOptions;
   }
 
   void _updateAnnotations() async {
     final AppleMapController controller = await _controller.future;
+    if (!mounted) return;
     controller._updateAnnotations(_AnnotationUpdates.from(
         _annotations.values.toSet(), widget.annotations));
     _annotations = _keyByAnnotationId(widget.annotations);
@@ -248,6 +250,7 @@ class _AppleMapState extends State<AppleMap> {
 
   void _updatePolylines() async {
     final AppleMapController controller = await _controller.future;
+    if (!mounted) return;
     controller._updatePolylines(
         _PolylineUpdates.from(_polylines.values.toSet(), widget.polylines));
     _polylines = _keyByPolylineId(widget.polylines);
@@ -255,6 +258,7 @@ class _AppleMapState extends State<AppleMap> {
 
   void _updatePolygons() async {
     final AppleMapController controller = await _controller.future;
+    if (!mounted) return;
     // ignore: unawaited_futures
     controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
@@ -263,6 +267,7 @@ class _AppleMapState extends State<AppleMap> {
 
   void _updateCircles() async {
     final AppleMapController controller = await _controller.future;
+    if (!mounted) return;
     // ignore: unawaited_futures
     controller._updateCircles(
         _CircleUpdates.from(_circles.values.toSet(), widget.circles));
@@ -275,6 +280,7 @@ class _AppleMapState extends State<AppleMap> {
       widget.initialCameraPosition,
       this,
     );
+    if (!mounted) return;
     _controller.complete(controller);
     widget.onMapCreated?.call(controller);
   }

@@ -1,3 +1,4 @@
+import Flutter
 //
 //  FlutterAnnotation.swift
 //  apple_maps_flutter
