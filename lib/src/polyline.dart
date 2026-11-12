@@ -37,7 +37,7 @@ class Polyline {
   const Polyline({
     required this.polylineId,
     this.consumeTapEvents = false,
-    this.color = Colors.black,
+    this.color = const Color(0xFF000000),
     this.polylineCap = Cap.buttCap,
     this.jointType = JointType.round,
     this.points = const <LatLng>[],
@@ -155,7 +155,7 @@ class Polyline {
 
     addIfPresent('polylineId', polylineId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
-    addIfPresent('color', color.value);
+    addIfPresent('color', color.toARGB32());
     addIfPresent('polylineCap', polylineCap._toJson());
     addIfPresent('jointType', jointType.value);
     addIfPresent('visible', visible);

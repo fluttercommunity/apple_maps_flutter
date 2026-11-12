@@ -37,12 +37,10 @@ Widget _mapWithPolygons(Set<Polygon>? polygons) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FakePlatformViewsController fakePlatformViewsController =
-      FakePlatformViewsController();
+  final FakePlatformViewsController fakePlatformViewsController = FakePlatformViewsController();
 
   setUpAll(() {
-    SystemChannels.platform_views.setMockMethodCallHandler(
-        fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform_views, fakePlatformViewsController.fakePlatformViewsMethodHandler);
   });
 
   setUp(() {
@@ -54,8 +52,7 @@ void main() {
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.polygonsToAdd!.length, 1);
 
     final Polygon initializedPolygon = platformAppleMap.polygonsToAdd!.first;
@@ -73,8 +70,7 @@ void main() {
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1, p2: p2)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.polygonsToAdd!.length, 1);
 
     final Polygon addedPolygon = platformAppleMap.polygonsToAdd!.first;
@@ -93,8 +89,7 @@ void main() {
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithPolygons(null));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.polygonIdsToRemove!.length, 1);
     expect(platformAppleMap.polygonIdsToRemove!.first, equals(p1.polygonId));
 
@@ -106,14 +101,12 @@ void main() {
   testWidgets("Updating a polygon", (WidgetTester tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 =
-        Polygon(polygonId: PolygonId("polygon_1"), visible: false);
+    final Polygon p2 = Polygon(polygonId: PolygonId("polygon_1"), visible: false);
 
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p2)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.polygonsToChange!.length, 1);
     expect(platformAppleMap.polygonsToChange!.first, equals(p2));
 
@@ -125,14 +118,12 @@ void main() {
   testWidgets("Updating a polygon", (WidgetTester tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     final Polygon p1 = Polygon(polygonId: PolygonId("polygon_1"));
-    final Polygon p2 =
-        Polygon(polygonId: PolygonId("polygon_1"), visible: false);
+    final Polygon p2 = Polygon(polygonId: PolygonId("polygon_1"), visible: false);
 
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p2)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.polygonsToChange!.length, 1);
 
     final Polygon update = platformAppleMap.polygonsToChange!.first;
@@ -152,8 +143,7 @@ void main() {
     p1.points.add(const LatLng(1.0, 1.0));
     await tester.pumpWidget(_mapWithPolygons(_toSet(p1: p1)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.polygonsToChange!.length, 1);
     expect(platformAppleMap.polygonsToChange!.first, equals(p1));
 
@@ -174,8 +164,7 @@ void main() {
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.polygonsToChange, cur);
     expect(platformAppleMap.polygonIdsToRemove!.isEmpty, true);
@@ -197,8 +186,7 @@ void main() {
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.polygonsToChange!.length, 1);
     expect(platformAppleMap.polygonsToAdd!.length, 1);
@@ -222,8 +210,7 @@ void main() {
     await tester.pumpWidget(_mapWithPolygons(prev));
     await tester.pumpWidget(_mapWithPolygons(cur));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.polygonsToChange, _toSet(p3: p3));
     expect(platformAppleMap.polygonIdsToRemove!.isEmpty, true);

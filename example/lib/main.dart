@@ -17,7 +17,7 @@ import 'package:apple_maps_flutter_example/place_polygon.dart';
 import 'package:apple_maps_flutter_example/place_polyline.dart';
 import 'package:apple_maps_flutter_example/scrolling_map.dart';
 import 'package:apple_maps_flutter_example/snapshot.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 final List<ExamplePage> _allPages = <ExamplePage>[
   MapUiPage(),

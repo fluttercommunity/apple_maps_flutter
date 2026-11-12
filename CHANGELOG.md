@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0
+
+* Adds Swift Package Manager support (CocoaPods is still supported). Removes the Objective-C registration shim; the plugin class is now the Swift class `AppleMapsFlutterPlugin`. Requires Flutter 3.41+.
+* Raises the minimum iOS version to 13.0.
+
 ## 1.4.0
 
 * Flutter 3.27.1 compatibility, replace `ui.hash*` with `Object.hash*

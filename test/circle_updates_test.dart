@@ -37,12 +37,10 @@ Widget _mapWithCircles(Set<Circle>? circles) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FakePlatformViewsController fakePlatformViewsController =
-      FakePlatformViewsController();
+  final FakePlatformViewsController fakePlatformViewsController = FakePlatformViewsController();
 
   setUpAll(() {
-    SystemChannels.platform_views.setMockMethodCallHandler(
-        fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform_views, fakePlatformViewsController.fakePlatformViewsMethodHandler);
   });
 
   setUp(() {
@@ -54,8 +52,7 @@ void main() {
     final Circle c1 = Circle(circleId: CircleId("circle_1"));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.circlesToAdd!.length, 1);
 
     final Circle initializedCircle = platformAppleMap.circlesToAdd!.first;
@@ -73,8 +70,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1, c2: c2)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.circlesToAdd!.length, 1);
 
     final Circle addedCircle = platformAppleMap.circlesToAdd!.first;
@@ -93,8 +89,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(null));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.circleIdsToRemove!.length, 1);
     expect(platformAppleMap.circleIdsToRemove!.first, equals(c1.circleId));
 
@@ -111,8 +106,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c2)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.circlesToChange!.length, 1);
     expect(platformAppleMap.circlesToChange!.first, equals(c2));
 
@@ -129,8 +123,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c1)));
     await tester.pumpWidget(_mapWithCircles(_toSet(c1: c2)));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
     expect(platformAppleMap.circlesToChange!.length, 1);
 
     final Circle update = platformAppleMap.circlesToChange!.first;
@@ -151,8 +144,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(prev));
     await tester.pumpWidget(_mapWithCircles(cur));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.circlesToChange, cur);
     expect(platformAppleMap.circleIdsToRemove!.isEmpty, true);
@@ -174,8 +166,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(prev));
     await tester.pumpWidget(_mapWithCircles(cur));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.circlesToChange!.length, 1);
     expect(platformAppleMap.circlesToAdd!.length, 1);
@@ -199,8 +190,7 @@ void main() {
     await tester.pumpWidget(_mapWithCircles(prev));
     await tester.pumpWidget(_mapWithCircles(cur));
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.circlesToChange, _toSet(c3: c3));
     expect(platformAppleMap.circleIdsToRemove!.isEmpty, true);

@@ -7,7 +7,7 @@
 import 'dart:typed_data';
 
 import 'package:apple_maps_flutter_example/page.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 
 const CameraPosition _kInitialPosition =
