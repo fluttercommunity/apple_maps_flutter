@@ -1,6 +1,6 @@
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 import 'package:apple_maps_flutter_example/page.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class MapUpdatePage extends ExamplePage {
   MapUpdatePage() : super(const Icon(Icons.refresh), 'Update Map');

@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
-import 'package:flutter/foundation.dart'
-    show debugDefaultTargetPlatformOverride;
+import 'package:flutter/foundation.dart' show debugDefaultTargetPlatformOverride;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,12 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'fake_maps_controllers.dart';
 
 void main() {
-  final FakePlatformViewsController fakePlatformViewsController =
-      FakePlatformViewsController();
+  final FakePlatformViewsController fakePlatformViewsController = FakePlatformViewsController();
 
   setUpAll(() {
-    SystemChannels.platform_views.setMockMethodCallHandler(
-        fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform_views, fakePlatformViewsController.fakePlatformViewsMethodHandler);
   });
 
   setUp(() {
@@ -35,16 +32,13 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
-    expect(platformAppleMap.cameraPosition,
-        const CameraPosition(target: LatLng(10.0, 15.0)));
+    expect(platformAppleMap.cameraPosition, const CameraPosition(target: LatLng(10.0, 15.0)));
     debugDefaultTargetPlatformOverride = null;
   });
 
-  testWidgets('Initial camera position change is a no-op',
-      (WidgetTester tester) async {
+  testWidgets('Initial camera position change is a no-op', (WidgetTester tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
@@ -64,11 +58,9 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
-    expect(platformAppleMap.cameraPosition,
-        const CameraPosition(target: LatLng(10.0, 15.0)));
+    expect(platformAppleMap.cameraPosition, const CameraPosition(target: LatLng(10.0, 15.0)));
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -84,8 +76,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.compassEnabled, false);
 
@@ -115,8 +106,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.mapType, MapType.hybrid);
 
@@ -146,11 +136,9 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
-    expect(platformAppleMap.minMaxZoomPreference,
-        const MinMaxZoomPreference(1.0, 3.0));
+    expect(platformAppleMap.minMaxZoomPreference, const MinMaxZoomPreference(1.0, 3.0));
 
     await tester.pumpWidget(
       const Directionality(
@@ -162,8 +150,7 @@ void main() {
       ),
     );
 
-    expect(
-        platformAppleMap.minMaxZoomPreference, MinMaxZoomPreference.unbounded);
+    expect(platformAppleMap.minMaxZoomPreference, MinMaxZoomPreference.unbounded);
     debugDefaultTargetPlatformOverride = null;
   });
 
@@ -179,8 +166,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.rotateGesturesEnabled, false);
 
@@ -210,8 +196,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.scrollGesturesEnabled, false);
 
@@ -241,8 +226,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.pitchGesturesEnabled, false);
 
@@ -272,8 +256,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.zoomGesturesEnabled, false);
 
@@ -303,8 +286,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.myLocationEnabled, false);
 
@@ -322,8 +304,7 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
-  testWidgets('Can update myLocationButtonEnabled',
-      (WidgetTester tester) async {
+  testWidgets('Can update myLocationButtonEnabled', (WidgetTester tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await tester.pumpWidget(
       const Directionality(
@@ -335,8 +316,7 @@ void main() {
       ),
     );
 
-    final FakePlatformAppleMap platformAppleMap =
-        fakePlatformViewsController.lastCreatedView!;
+    final FakePlatformAppleMap platformAppleMap = fakePlatformViewsController.lastCreatedView!;
 
     expect(platformAppleMap.myLocationButtonEnabled, true);
 

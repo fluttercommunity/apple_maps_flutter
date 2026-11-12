@@ -39,10 +39,10 @@ class Circle {
   const Circle({
     required this.circleId,
     this.consumeTapEvents = false,
-    this.fillColor = Colors.transparent,
+    this.fillColor = const Color(0x00000000),
     this.center = const LatLng(0.0, 0.0),
     this.radius = 0,
-    this.strokeColor = Colors.black,
+    this.strokeColor = const Color(0xFF000000),
     this.strokeWidth = 10,
     this.visible = true,
     this.zIndex,
@@ -130,10 +130,10 @@ class Circle {
 
     addIfPresent('circleId', circleId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
-    addIfPresent('fillColor', fillColor.value);
+    addIfPresent('fillColor', fillColor.toARGB32());
     addIfPresent('center', center._toJson());
     addIfPresent('radius', radius);
-    addIfPresent('strokeColor', strokeColor.value);
+    addIfPresent('strokeColor', strokeColor.toARGB32());
     addIfPresent('strokeWidth', strokeWidth);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);

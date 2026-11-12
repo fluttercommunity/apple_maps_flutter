@@ -39,9 +39,9 @@ class Polygon {
   const Polygon({
     required this.polygonId,
     this.consumeTapEvents = false,
-    this.fillColor = Colors.black,
+    this.fillColor = const Color(0xFF000000),
     this.points = const <LatLng>[],
-    this.strokeColor = Colors.black,
+    this.strokeColor = const Color(0xFF000000),
     this.strokeWidth = 10,
     this.visible = true,
     this.zIndex,
@@ -128,8 +128,8 @@ class Polygon {
 
     addIfPresent('polygonId', polygonId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
-    addIfPresent('fillColor', fillColor.value);
-    addIfPresent('strokeColor', strokeColor.value);
+    addIfPresent('fillColor', fillColor.toARGB32());
+    addIfPresent('strokeColor', strokeColor.toARGB32());
     addIfPresent('strokeWidth', strokeWidth);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);

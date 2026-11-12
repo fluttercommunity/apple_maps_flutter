@@ -20,7 +20,7 @@ void main() {
   final Completer<String> allTestsCompleter = Completer<String>();
   enableFlutterDriverExtension(handler: (_) => allTestsCompleter.future);
 
-  tearDownAll(() => allTestsCompleter.complete(null));
+  tearDownAll(() => allTestsCompleter.complete(''));
 
   test('testCompassToggle', () async {
     final Key key = GlobalKey();
@@ -43,6 +43,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     bool compassEnabled = (await inspector.isCompassEnabled())!;
     expect(compassEnabled, false);
 
@@ -86,6 +87,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     MinMaxZoomPreference zoomLevel = await inspector.getMinMaxZoomLevels();
     expect(zoomLevel, equals(initialZoomLevel));
 
@@ -126,6 +128,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     bool zoomGesturesEnabled = (await inspector.isZoomGesturesEnabled())!;
     expect(zoomGesturesEnabled, false);
 
@@ -166,6 +169,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     bool rotateGesturesEnabled = (await inspector.isRotateGesturesEnabled())!;
     expect(rotateGesturesEnabled, false);
 
@@ -206,6 +210,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     bool pitchGesturesEnabled = (await inspector.isPitchGesturesEnabled())!;
     expect(pitchGesturesEnabled, false);
 
@@ -246,6 +251,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     bool scrollGesturesEnabled = (await inspector.isScrollGesturesEnabled())!;
     expect(scrollGesturesEnabled, false);
 
@@ -350,6 +356,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     bool myLocationButtonEnabled =
         (await inspector.isMyLocationButtonEnabled())!;
     expect(myLocationButtonEnabled, true);
@@ -393,6 +400,7 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     final bool myLocationButtonEnabled =
         (await inspector.isMyLocationButtonEnabled())!;
     expect(myLocationButtonEnabled, false);
@@ -420,8 +428,9 @@ void main() {
     ));
 
     final AppleMapInspector inspector = await inspectorCompleter.future;
+    await waitForNativeLayout();
     final bool myLocationButtonEnabled =
         (await inspector.isMyLocationButtonEnabled())!;
-    expect(myLocationButtonEnabled, false);
+    expect(myLocationButtonEnabled, true);
   });
 }

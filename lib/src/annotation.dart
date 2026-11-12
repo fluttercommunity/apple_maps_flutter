@@ -130,6 +130,9 @@ class AnnotationId {
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
 @immutable
+// zIndex is updated in place by onAnnotationZIndexChanged (apple_map.dart), so
+// making it final would change behavior.
+// ignore: must_be_immutable
 class Annotation {
   /// Creates a set of annotation configuration options.
   ///

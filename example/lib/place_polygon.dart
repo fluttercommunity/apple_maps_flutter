@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:apple_maps_flutter/apple_maps_flutter.dart';
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'page.dart';
 
